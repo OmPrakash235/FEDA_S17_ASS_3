@@ -1,0 +1,91 @@
+<!-- Create a cacheFactory and perform remove, remove all and destroy operation on it. -->
+
+<!DOCTYPE html>
+<html ng-app="myApp">
+	<head>
+		<title>AngularJS $http</title>
+		<link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+	</head>
+	<body class="container">
+		<div ng-controller="newCtrl" class="row">
+			<div class="h2">Cache Get, Put and Info</div><br/>
+			<form>
+				<div class="h4">Enter Key Name &amp; Value</div>
+				<div class="form-group">
+					<input type="text" class="form-control" id="keyName" placeholder="Key Name" ng-model="key1"/>
+				</div>
+				<div class="form-group">
+					<input type="text" class="form-control" id="keyValue" placeholder="Key Value" ng-model="value1"/>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-success" ng-click="put(key1, value1)">Save to cache</button>
+					<button class="btn btn-success" ng-click="remove()">Remove cache</button>
+					<button class="btn btn-success" ng-click="removeAll()">Remove all cache</button>
+					<button class="btn btn-success" ng-click="destroy()">Destroy</button>
+				</div>
+			</form>
+			<br/>
+			<div ng-show="keys">
+				<div class="h4">Cache Details</div>
+				<table class="table table-bordered table-responsive">
+					<thead>
+						<tr>
+							<th class="col-md-6">Key</th>
+							<th class="col-md-6">Value</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="key in keys">
+							<td class="col-md-6">{{key}}</td>
+							<td class="col-md-6"><span ng-bind="cache.get(key)"></span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div ng-show="keys">
+				<div class="h4">Cache Info</div>
+				<table class="table table-bordered table-responsive">
+					<thead>
+						<tr>
+							<th class="col-md-6">Key Name</th>
+							<th class="col-md-6">Value</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="(key, value) in cache.info()">
+							<td class="col-md-6">{{key}}</td>
+							<td class="col-md-6">{{value}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+	<script type="text/javascript">
+		var module = angular.module("myApp", []);
+
+		module.controller('newCtrl', ['$scope', '$cacheFactory', function($scope, $cacheFactory){
+			$scope.keys = [];
+			$scope.cache = $cacheFactory('cacheId');
+			
+			$scope.put = function(key, value) {
+				if(angular.isUndefined($scope.cache.get(key))) {
+					$scope.keys.push(key);
+				}
+				$scope.cache.put(key, angular.isUndefined(value) ? null : value);
+				document.getElementsByTagName('input').value='';
+			};
+			$scope.remove = function() {
+				var removableKey = prompt('Enter key name', '');
+				$scope.cache.remove(removableKey);
+			};
+			$scope.removeAll = function() {
+				$scope.cache.removeAll();
+			};
+			$scope.destroy = function() {
+				$scope.cache.destroy();
+			};
+		}]);
+	</script>
+</html>
